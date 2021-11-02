@@ -45,3 +45,17 @@ func (t *todoUseCase) UpdateTodo(id string, tu *domain.UpdateTodo) (err error) {
 
 	return err
 }
+
+func (t *todoUseCase) DeleteTodo(id string) (err error) {
+	_, err = t.RetrieveTodo(id)
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return domain.ErrNotFound
+		}
+		return err
+	}
+
+	err = t.todoRepo.DeleteTodo(id)
+
+	return err
+}

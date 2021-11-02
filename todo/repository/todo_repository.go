@@ -106,3 +106,15 @@ func (t *todoRepository) UpdateTodo(id string, td *domain.Todo, tu *domain.Updat
 
 	return nil
 }
+
+func (t *todoRepository) DeleteTodo(id string) (err error) {
+	ctx := context.Background()
+
+	_, err = t.fs.Collection("todo").Doc(id).Delete(ctx)
+	if err != nil {
+		zap.L().Error("failed to delete a todo", zap.Error(err))
+		return err
+	}
+
+	return nil
+}

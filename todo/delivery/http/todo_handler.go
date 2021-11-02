@@ -91,3 +91,14 @@ func (t *TodoHandler) UpdateTodo(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusNoContent).Send(nil)
 }
+
+func (t *TodoHandler) DeleteTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	err := t.todoUC.DeleteTodo(id)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusNoContent).Send(nil)
+}
