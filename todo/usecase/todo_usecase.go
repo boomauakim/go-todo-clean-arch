@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"github.com/boomauakim/go-todo-clean-arch/domain"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type todoUseCase struct {
@@ -22,4 +24,10 @@ func (t *todoUseCase) RetrieveTodo(id string) (todo domain.Todo, err error) {
 	todo, err = t.todoRepo.RetrieveTodo(id)
 
 	return todo, err
+}
+
+func (t *todoUseCase) CreateTodo(td *domain.CreateTodo) (err error) {
+	err = t.todoRepo.CreateTodo(td)
+
+	return err
 }

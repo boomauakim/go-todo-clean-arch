@@ -51,3 +51,22 @@ func (t *TodoHandler) RetrieveTodo(c *fiber.Ctx) error {
 
 	return c.JSON(resp)
 }
+
+func (t *TodoHandler) CreateTodo(c *fiber.Ctx) error {
+	todo := new(domain.CreateTodo)
+	if err := c.BodyParser(todo); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(todo); err != nil {
+		return fiber.NewError(fiber.ErrBadRequest.Code, err.Error())
+	}
+
+	err := t.todoUC.CreateTodo(todo)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).Send(nil)
+}

@@ -8,6 +8,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
 
 type todoRepository struct {
 	fs *firestore.Client
@@ -57,6 +60,22 @@ func (t *todoRepository) RetrieveTodo(id string) (todo domain.Todo, err error) {
 	todo.ID = doc.Ref.ID
 
 	return todo, nil
+}
+
+func (t *todoRepository) CreateTodo(td *domain.CreateTodo) (err error) {
+	ctx := context.Background()
+
+	_, _, err = t.fs.Collection("todo").Add(ctx, map[string]interface{}{
+		"title":     td.Title,
+		"completed": false,
+		"createdAt": firestore.ServerTimestamp,
+	})
+	if err != nil {
+		zap.L().Error("failed to create a todo", zap.Error(err))
+		return err
+	}
+
+	return nil
 }
 
 		{
