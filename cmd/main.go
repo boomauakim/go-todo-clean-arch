@@ -4,6 +4,8 @@ import (
 	todoRouter "github.com/boomauakim/go-todo-clean-arch/todo/delivery/http/route"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
@@ -16,7 +18,21 @@ func main() {
 	appEnv := viper.GetString("app.env")
 	port := viper.GetString("app.port")
 
-	todoRouter.SetupRouter(app)
+	var logger *zap.Logger
+	var err error
+	if appEnv == "production" {
+		config := zap.NewProductionConfig()
+		config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		logger, err = config.Build()
+	} else {
+		logger, err = zap.NewDevelopment()
+	}
+	if err != nil {
+		log.Fatalf("can't initialize zap logger: %v", err)
+	}
+	defer logger.Sync()
+	undo := zap.ReplaceGlobals(logger)
+	defer undo()
 
 	log.Fatal(app.Listen(":" + port))
 }
