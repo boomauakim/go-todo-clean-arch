@@ -2,11 +2,20 @@ package http
 
 import (
 	"github.com/boomauakim/go-todo-clean-arch/domain"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
 type TodoHandler struct {
 	todoUC domain.TodoUseCase
+}
+
+type ListAllTodosResponse struct {
+	Todos []domain.Todo `json:"todos"`
+}
+
+type TodoResponse struct {
+	Todo domain.Todo `json:"todo"`
 }
 
 func NewTodoHandler(uc domain.TodoUseCase) *TodoHandler {
@@ -17,9 +26,79 @@ func NewTodoHandler(uc domain.TodoUseCase) *TodoHandler {
 
 func (t *TodoHandler) ListAllTodos(c *fiber.Ctx) error {
 	todos, err := t.todoUC.ListAllTodos()
-
 	if err != nil {
-		return fiber.ErrServiceUnavailable
+		return err
 	}
-	return c.JSON(todos)
+
+	resp := ListAllTodosResponse{
+		Todos: todos,
+	}
+
+	return c.JSON(resp)
+}
+
+func (t *TodoHandler) RetrieveTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	todo, err := t.todoUC.RetrieveTodo(id)
+	if err != nil {
+		return err
+	}
+
+	resp := TodoResponse{
+		todo,
+	}
+
+	return c.JSON(resp)
+}
+
+func (t *TodoHandler) CreateTodo(c *fiber.Ctx) error {
+	todo := new(domain.CreateTodo)
+	if err := c.BodyParser(todo); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(todo); err != nil {
+		return fiber.NewError(fiber.ErrBadRequest.Code, err.Error())
+	}
+
+	err := t.todoUC.CreateTodo(todo)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).Send(nil)
+}
+
+func (t *TodoHandler) UpdateTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	tu := new(domain.UpdateTodo)
+	if err := c.BodyParser(tu); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(tu); err != nil {
+		return fiber.NewError(fiber.ErrBadRequest.Code, err.Error())
+	}
+
+	err := t.todoUC.UpdateTodo(id, tu)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusNoContent).Send(nil)
+}
+
+func (t *TodoHandler) DeleteTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	err := t.todoUC.DeleteTodo(id)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusNoContent).Send(nil)
 }

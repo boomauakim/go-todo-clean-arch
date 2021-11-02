@@ -43,6 +43,9 @@ func main() {
 			return nil
 		},
 	})
+
+	todoRouter.RegisterRouter(app)
+
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": fiber.Map{
