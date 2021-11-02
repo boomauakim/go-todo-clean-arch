@@ -11,8 +11,10 @@ type Todo struct {
 
 type TodoUseCase interface {
 	ListAllTodos() (t []Todo, err error)
+	RetrieveTodo(id string) (t Todo, err error)
 }
 
 type TodoRepository interface {
 	ListAllTodos() (t []Todo, err error)
+	RetrieveTodo(id string) (t Todo, err error)
 }

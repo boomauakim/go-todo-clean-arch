@@ -40,6 +40,25 @@ func (t *todoRepository) ListAllTodos() (todos []domain.Todo, err error) {
 	return todos, nil
 }
 
+func (t *todoRepository) RetrieveTodo(id string) (todo domain.Todo, err error) {
+	ctx := context.Background()
+
+	doc, err := t.fs.Collection("todo").Doc(id).Get(ctx)
+	if err != nil {
+		zap.L().Error("failed to retrieve a todo", zap.Error(err))
+		if status.Code(err) == codes.NotFound {
+			return domain.Todo{}, domain.ErrNotFound
+		}
+		return domain.Todo{}, err
+	}
+
+	todo = domain.Todo{}
+	mapstructure.Decode(doc.Data(), &todo)
+	todo.ID = doc.Ref.ID
+
+	return todo, nil
+}
+
 		{
 			ID:          "01FJVFD259PJ9RFJRGP0SPA963",
 			Title:       "Todo 1",

@@ -16,4 +16,5 @@ func RegisterRouter(f *fiber.App) {
 
 	v1 := f.Group("/v1")
 	v1.Get("/todos", todoHandler.ListAllTodos)
+	v1.Get("/todos/:id", todoHandler.RetrieveTodo)
 }

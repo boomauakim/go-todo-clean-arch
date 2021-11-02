@@ -17,3 +17,9 @@ func (t *todoUseCase) ListAllTodos() (todos []domain.Todo, err error) {
 
 	return todos, err
 }
+
+func (t *todoUseCase) RetrieveTodo(id string) (todo domain.Todo, err error) {
+	todo, err = t.todoRepo.RetrieveTodo(id)
+
+	return todo, err
+}
