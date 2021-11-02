@@ -13,14 +13,21 @@ type CreateTodo struct {
 	Title string `validate:"required"`
 }
 
+type UpdateTodo struct {
+	Title     string `validate:"omitempty"`
+	Completed *bool
+}
+
 type TodoUseCase interface {
 	ListAllTodos() (t []Todo, err error)
 	RetrieveTodo(id string) (t Todo, err error)
 	CreateTodo(td *CreateTodo) (err error)
+	UpdateTodo(id string, tu *UpdateTodo) (err error)
 }
 
 type TodoRepository interface {
 	ListAllTodos() (t []Todo, err error)
 	RetrieveTodo(id string) (t Todo, err error)
 	CreateTodo(td *CreateTodo) (err error)
+	UpdateTodo(id string, td *Todo, tu *UpdateTodo) (err error)
 }

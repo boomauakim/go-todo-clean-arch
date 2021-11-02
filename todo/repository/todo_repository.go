@@ -78,12 +78,31 @@ func (t *todoRepository) CreateTodo(td *domain.CreateTodo) (err error) {
 	return nil
 }
 
+func (t *todoRepository) UpdateTodo(id string, td *domain.Todo, tu *domain.UpdateTodo) (err error) {
+	ctx := context.Background()
+
+	title := td.Title
+	if tu.Title != "" {
+		title = tu.Title
+	}
+	completed := td.Completed
+	if tu.Completed != nil && completed != *tu.Completed {
+		completed = *tu.Completed
+	}
+	_, err = t.fs.Collection("todo").Doc(id).Update(ctx, []firestore.Update{
 		{
-			ID:          "01FJVFD259PJ9RFJRGP0SPA963",
-			Title:       "Todo 1",
-			Description: "This first todo.",
+			Path:  "title",
+			Value: title,
 		},
+		{
+			Path:  "completed",
+			Value: completed,
+		},
+	})
+	if err != nil {
+		zap.L().Error("failed to update a todo", zap.Error(err))
+		return err
 	}
 
-	return todos, nil
+	return nil
 }

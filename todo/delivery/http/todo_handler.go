@@ -70,3 +70,24 @@ func (t *TodoHandler) CreateTodo(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).Send(nil)
 }
+
+func (t *TodoHandler) UpdateTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	tu := new(domain.UpdateTodo)
+	if err := c.BodyParser(tu); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(tu); err != nil {
+		return fiber.NewError(fiber.ErrBadRequest.Code, err.Error())
+	}
+
+	err := t.todoUC.UpdateTodo(id, tu)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusNoContent).Send(nil)
+}

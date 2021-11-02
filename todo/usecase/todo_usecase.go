@@ -31,3 +31,17 @@ func (t *todoUseCase) CreateTodo(td *domain.CreateTodo) (err error) {
 
 	return err
 }
+
+func (t *todoUseCase) UpdateTodo(id string, tu *domain.UpdateTodo) (err error) {
+	td, err := t.RetrieveTodo(id)
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return domain.ErrNotFound
+		}
+		return err
+	}
+
+	err = t.todoRepo.UpdateTodo(id, &td, tu)
+
+	return err
+}

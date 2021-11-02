@@ -18,4 +18,5 @@ func RegisterRouter(f *fiber.App) {
 	v1.Get("/todos", todoHandler.ListAllTodos)
 	v1.Get("/todos/:id", todoHandler.RetrieveTodo)
 	v1.Post("/todos", todoHandler.CreateTodo)
+	v1.Patch("/todos/:id", todoHandler.UpdateTodo)
 }
