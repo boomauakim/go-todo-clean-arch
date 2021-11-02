@@ -1,7 +1,10 @@
 package main
 
 import (
+	"log"
+
 	todoRouter "github.com/boomauakim/go-todo-clean-arch/todo/delivery/http/route"
+	"github.com/boomauakim/go-todo-clean-arch/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -33,6 +36,20 @@ func main() {
 	defer logger.Sync()
 	undo := zap.ReplaceGlobals(logger)
 	defer undo()
+
+	app := fiber.New(fiber.Config{
+		ErrorHandler: func(c *fiber.Ctx, e error) error {
+			utils.ErrorHandler(c, e)
+			return nil
+		},
+	})
+	app.Use(func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": fiber.Map{
+				"message": "The requested url doesn't exist.",
+			},
+		})
+	})
 
 	log.Fatal(app.Listen(":" + port))
 }
