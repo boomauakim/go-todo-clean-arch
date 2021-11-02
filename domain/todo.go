@@ -1,15 +1,18 @@
 package domain
 
+import "time"
+
 type Todo struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Completed bool      `json:"completed"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type TodoUseCase interface {
-	ListAllTodos() ([]Todo, error)
+	ListAllTodos() (t []Todo, err error)
 }
 
 type TodoRepository interface {
-	ListAllTodos() (todos []Todo, err error)
+	ListAllTodos() (t []Todo, err error)
 }
