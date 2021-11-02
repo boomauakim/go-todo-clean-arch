@@ -3,13 +3,20 @@ package main
 import (
 	todoRouter "github.com/boomauakim/go-todo-clean-arch/todo/delivery/http/route"
 	"github.com/gofiber/fiber/v2"
-	"log"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	app := fiber.New()
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./config")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Fatal error config file: %s \n", err)
+	}
+	appEnv := viper.GetString("app.env")
+	port := viper.GetString("app.port")
 
 	todoRouter.SetupRouter(app)
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":" + port))
 }
