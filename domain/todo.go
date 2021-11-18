@@ -29,7 +29,7 @@ type TodoUseCase interface {
 type TodoRepository interface {
 	ListAllTodos() (t []Todo, err error)
 	RetrieveTodo(id string) (t Todo, err error)
-	CreateTodo(td *CreateTodo) (err error)
-	UpdateTodo(id string, td *Todo, tu *UpdateTodo) (err error)
+	CreateTodo(ct *CreateTodo) (err error)
+	UpdateTodo(id string, td *Todo, ut *UpdateTodo) (err error)
 	DeleteTodo(id string) (err error)
 }
