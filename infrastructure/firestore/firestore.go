@@ -13,7 +13,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func FirestoreInit() *firestore.Client {
+func NewFirestoreLocalClient() *firestore.Client {
 	ctx := context.Background()
 
 	_, p, _, _ := runtime.Caller(0)
@@ -26,12 +26,21 @@ func FirestoreInit() *firestore.Client {
 
 	app, err := firebase.NewApp(ctx, nil, serviceAccount)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("firebase.NewApp err: %v", err)
 	}
 
 	client, err := app.Firestore(ctx)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("app.Firestore err: %v", err)
+	}
+
+	return client
+}
+
+func NewFirestoreTestClient(ctx context.Context) *firestore.Client {
+	client, err := firestore.NewClient(ctx, "test")
+	if err != nil {
+		log.Fatalf("firestore.NewClient err: %v", err)
 	}
 
 	return client

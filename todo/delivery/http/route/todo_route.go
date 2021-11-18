@@ -9,7 +9,7 @@ import (
 )
 
 func RegisterRouter(f *fiber.App) {
-	client := firestore.FirestoreInit()
+	client := firestore.NewFirestoreLocalClient()
 	todoRepo := repository.NewTodoRepository(client)
 	todoUC := usecase.NewTodoUseCase(todoRepo)
 	todoHandler := delivery.NewTodoHandler(todoUC)
