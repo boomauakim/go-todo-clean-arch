@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	todoRouter "github.com/boomauakim/go-todo-clean-arch/todo/delivery/http/route"
 	"github.com/boomauakim/go-todo-clean-arch/utils"
@@ -15,8 +16,12 @@ func main() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Fatal error config file: %s \n", err)
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			log.Fatalf("Fatal error config file: %s \n", err)
+		}
 	}
 	appEnv := viper.GetString("app.env")
 	port := viper.GetString("app.port")
